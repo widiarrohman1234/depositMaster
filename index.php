@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+// error_reporting(0);
 $conn=mysqli_connect('localhost','root','');
 
 if(!$conn)
@@ -52,7 +52,7 @@ while($hasil=mysqli_fetch_array($result)){
       $saldo=$saldo+$hasil['Debit'];
       echo"<td>Rp. ".num($saldo)."</td>";    
      }else{
-      /* Jika debit sama dengan 0 */
+      /* Jika debit sama dengan 0 = tarik uang*/
       echo"<td>Rp. ".num($hasil['Debit'])."</td>";
       echo"<td>Rp. ".num($hasil['Kredit'])."</td>";
       $kredit=$kredit+$hasil['Kredit'];
