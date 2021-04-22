@@ -1,76 +1,73 @@
 <?php
-// error_reporting(0);
-$conn=mysqli_connect('localhost','root','');
-
-if(!$conn)
-{
- die('Tidak terhubung ke database: ' . mysqli_error($conn));
-}
-
-$db = mysqli_select_db($conn,'db_counting');
-
-
-$result=mysqli_query($conn,'SELECT tb_hitung.Keterangan, tb_hitung.Debit, tb_hitung.Kredit FROM tb_hitung INNER JOIN tb_bulan ON tb_hitung.id_bulan=tb_bulan.id_bulan ORDER BY tb_hitung.id_hitung');
-
-echo"<table border='1'>";
- echo"<tr>";
-  echo"<th>No</th>";
-  echo"<th>Keterangan</th>";
-  echo"<th>Debit</th>";
-  echo"<th>Kredit</th>";
-  echo"<th>Saldo</th>";
- echo"</tr>";
- echo"<tr>";
- $count=1;
-
-function num($rp){
-if($rp!=0){
- $hasil = number_format($rp, 0, ',', '.');
- }
- else{
- $hasil=0;
- }
-return $hasil;
-}
-
-while($hasil=mysqli_fetch_array($result)){
-  echo"<td>$count</td>";
-  echo"<td>".$hasil['Keterangan']."</td>";
-  if($count==1){
-    /* pertama kali deklarasi Debit */
-   echo"<td>Rp. ".num($hasil['Debit'])."</td>";
-   echo"<td>Rp. ".num($hasil['Kredit'])."</td>";
-   $debit=$hasil['Debit'];
-   $saldo=$hasil['Debit'];
-   echo"<td>RP. ".num($saldo)."</td>";   
-  }else{
-     if($hasil['Debit']!=0){   
-       /* Jika debit tidak sama dengan 0 */
-      echo"<td>Rp. ".num($hasil['Debit'])."</td>";
-      echo"<td>Rp. ".num($hasil['Kredit'])."</td>";
-      $debit=$debit+$hasil['Debit'];
-      $saldo=$saldo+$hasil['Debit'];
-      echo"<td>Rp. ".num($saldo)."</td>";    
-     }else{
-      /* Jika debit sama dengan 0 = tarik uang*/
-      echo"<td>Rp. ".num($hasil['Debit'])."</td>";
-      echo"<td>Rp. ".num($hasil['Kredit'])."</td>";
-      $kredit=$kredit+$hasil['Kredit'];
-      $saldo=$saldo-$hasil['Kredit'];
-      echo"<td>Rp. ".num($saldo)."</td>";    
-     }
-  }
- echo"</tr>";
- echo"<tr>";
-  $count++;
-}
-
-echo"<tr>";
-  echo"<th colspan='2'>Jumlah</th>";
-  echo"<th>Rp. ".num($debit)."</th>";
-  echo"<th>Rp. ".num($kredit)."</th>";
-  echo"<th>Rp. ".num($saldo)."</th>";
- echo"</tr>";
-echo"</table>";
-
+$conn = mysqli_connect('localhost','root','');
+$db = mysqli_select_db($conn,'deposit');
+$result = mysqli_query($conn,'select * from transaksi');
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deposit</title>
+</head>
+<body>
+<table border="1">
+  <head>
+    <th>NO</th>
+    <th>Pegawai</th>
+    <th>Nasabah</th>
+    <th>Tanggal</th>
+    <th>Keterangan</th>
+    <th>Debit</th>
+    <th>Kredit</th>
+    <th>Saldo</th>
+  </head>
+  <body>
+    <?php 
+    $no = 1;
+    while($data=mysqli_fetch_array($result)){
+    echo "<tr>";
+    echo  "<td>".$no."</td>";
+    echo  "<td>".$data["id_user"]."</td>";
+    echo  "<td>".$data['id_nasabah']."</td>";
+    echo  "<td>".$data['tanggal']."</td>";
+    echo  "<td>".$data['ket']."</td>";
+    if ($no == 1) {
+      //menampilkan debit pertama
+      echo "<td>".$data['debit']."</td>";
+      echo "<td>".$data['kredit']."</td>";
+        $debit=$data['debit'];
+        $kredit=$data['kredit'];
+        $saldo=$debit;
+      echo "<td>".$saldo."</td>";
+    }else{
+      if ($data['debit']!=0) {
+        //mendapatkan debit
+        echo "<td>".$data['debit']."</td>";
+        echo "<td>".$data['kredit']."</td>";
+          $debit=$debit+$data['debit'];
+          $saldo=$saldo+$data['debit'];
+        echo "<td>".$saldo."</td>";
+      }else{
+        //untuk mendapatkan kredit
+        echo "<td>".$data['debit']."</td>";
+        echo "<td>".$data['kredit']."</td>";
+          $kredit=$kredit+$data['kredit'];
+          $saldo=$saldo-$data['kredit'];
+        echo "<td>".$saldo."</td>";
+      }
+    }
+    echo "</tr>";
+  $no++;
+  }
+    ?>
+  <tr>
+    <th colspan="5">Jumlah</th>
+    <?php
+    echo "<th>".$debit."</th>";
+    echo "<th>".$kredit."</th>";
+    echo "<th>".$saldo."</th>";
+    ?>
+  </tr>
+  </body>
+</table>
+</body>
+</html>
